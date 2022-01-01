@@ -1,5 +1,6 @@
 import express from "express";
-import { PORT } from "./config";
+import { PORT } from "./config/config";
+import { connectMongoDB } from "./config/database";
 let app = express();
 const cors = require("cors");
 require("dotenv").config();
@@ -13,6 +14,7 @@ const middleware = [
 app.use(middleware);
 
 const start = async (): Promise<void> => {
+  await connectMongoDB();
   app.use("/", (req, res) => {
     res.send(`Other request:\n${req.method} at \n` + new Date());
   });
