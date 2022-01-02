@@ -9,8 +9,9 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body as { email: string; password: string };
 
   const user = await User.findOne({ email });
+  console.log(user);
 
-  if (user && (await user.matchesPassword(password))) {
+  if (user && (await user.matchPassword(password))) {
     res.json({
       id: user.id,
       name: user.name,
@@ -24,8 +25,13 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * Register a new user
+ * @route POST /api/users
+ * @access Public
+ */
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  const email = req.body.email;
+  const { id, name, email, password, imageURL, role } = req.body;
 
   try {
     const userExists = await User.findOne({ email });
@@ -42,7 +48,7 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
       status: true,
       data: payload,
       message: "Registration successful!",
-      token: true,
+      token: generateToken(id),
     });
   } catch (error: any) {
     res.status(400).json({
