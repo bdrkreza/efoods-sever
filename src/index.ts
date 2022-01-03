@@ -16,20 +16,16 @@ const middleware = [
   passport.initialize(),
 ];
 
+// Middleware to accept body
 app.use(middleware);
 
-//Error handler
-
 const start = async (): Promise<void> => {
+  //database connect
   await connectMongoDB();
+  // route connect
   app.use("/api", router);
 
-  app.use("/", (req, res) => {
-    res.send(`Other request:\n${req.method} at \n` + new Date());
-  });
-
-  // Use Middleware
-
+  // error handler
   app.use(notFound);
   app.use(errorHandler);
   // start the express server

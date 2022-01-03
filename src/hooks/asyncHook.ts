@@ -23,14 +23,12 @@ export const getAll = async <T extends mongoose.Document>(
 export const save = async <T extends mongoose.Model<T>>(
   collection: T,
   payload: T
-): Promise<string> => {
+): Promise<any> => {
   const obj = {
+    status: true,
     ...payload,
     id: new mongoose.Types.ObjectId(),
-    createdAt: new Date(),
-    modifiedAt: new Date(),
   };
-
   const savedObj = await collection.create(obj);
   return savedObj.id;
 };

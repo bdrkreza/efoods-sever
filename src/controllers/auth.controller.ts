@@ -5,11 +5,15 @@ import { CUser } from "../services/auth.service";
 import generateToken from "../utils/generateToken";
 const asyncHandler = require("express-async-handler");
 
+/**
+ * authUser a private controller
+ * @route POST /api/users
+ * @access private
+ */
 const authUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body as { email: string; password: string };
 
   const user = await User.findOne({ email });
-  console.log(user);
 
   if (user && (await user.matchPassword(password))) {
     res.json({
@@ -31,21 +35,18 @@ const authUser = asyncHandler(async (req: Request, res: Response) => {
  * @access Public
  */
 const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  const { id, name, email, password, imageURL, role } = req.body;
+  const { id, email } = req.body as {
+    id: string;
+    email: string;
+  };
 
   try {
-    const userExists = await User.findOne({ email });
-
-    if (userExists) {
-      res.status(400);
-      throw new Error("Email Address is Already Registered!");
-    }
-
     const payload = req.body;
     await save(User, payload);
 
     res.status(200).json({
       status: true,
+      error: false,
       data: payload,
       message: "Registration successful!",
       token: generateToken(id),

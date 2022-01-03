@@ -1,20 +1,21 @@
 import { NextFunction, Request, Response } from "express";
 
 const notFound = (req: Request, res: Response, next: NextFunction) => {
-  const error = new Error(`Not found - ${req.originalUrl}`);
+  const error = new Error(`Resource not found - ${req.originalUrl}`);
+  console.log(error.message);
   res.status(404);
   next(error);
 };
 
 const notFoundServer = (err: any, req: any, res: any, next: any) => {
-  err.statusCode = err.statusCode || 800;
+  err.statusCode = err.statusCode || 3000;
   err.status = err.status || "error";
 
   res.status(err.statusCode).json({
     status: err.status,
     message: err.message,
   });
-  next();
+  next(err);
 };
 
 const errorHandler = (
@@ -29,7 +30,7 @@ const errorHandler = (
     message: err.message,
     stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
-  next();
+  next(err);
 };
 
-export { notFound, errorHandler, notFoundServer };
+export { notFoundServer, notFound, errorHandler };
