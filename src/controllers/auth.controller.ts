@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
 import { getAll, save } from "../hooks/asyncHook";
-import { User } from "../models/user.model";
+import { User } from "../models";
 import { CUser } from "../services/auth.service";
 import generateToken from "../utils/generateToken";
+
 const asyncHandler = require("express-async-handler");
 
 /**
@@ -13,19 +14,28 @@ const asyncHandler = require("express-async-handler");
 const authUser = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body as { email: string; password: string };
 
-  const user = await User.findOne({ email });
+  try {
+    const user = await User.findOne({ email });
 
-  if (user && (await user.matchPassword(password))) {
-    res.json({
-      id: user.id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      token: generateToken(user.id),
+    if (user && (await user.matchesPassword(password))) {
+      res.json({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        token: generateToken(user.id),
+      });
+    } else {
+      res.status(401);
+      throw new Error("Invalid email or password");
+    }
+  } catch (error: any) {
+    res.status(400).json({
+      status: false,
+      data: null,
+      message: error.message,
+      token: null,
     });
-  } else {
-    res.status(401);
-    throw new Error("Invalid email or password");
   }
 });
 

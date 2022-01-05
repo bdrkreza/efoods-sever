@@ -25,7 +25,6 @@ export const save = async <T extends mongoose.Model<T>>(
   payload: T
 ): Promise<any> => {
   const obj = {
-    status: true,
     ...payload,
     id: new mongoose.Types.ObjectId(),
   };

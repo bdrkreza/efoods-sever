@@ -1,11 +1,13 @@
+require("dotenv").config();
 import express from "express";
 import passport from "passport";
 import { PORT } from "./config/config";
 import { connectMongoDB } from "./config/database";
 import { errorHandler, notFound } from "./middleware/errorHandler";
-import router from "./routes/auth.routes";
+import { authRouter, productRouter, userRouter } from "./routes";
 
-require("dotenv").config();
+const path = require("path");
+const fileUpload = require("express-fileupload");
 let app = express();
 const cors = require("cors");
 
@@ -14,6 +16,11 @@ const middleware = [
   express.urlencoded({ limit: "30mb", extended: true }),
   cors(),
   passport.initialize(),
+  fileUpload({
+    debug: true,
+    useTempFiles: true,
+    tempFileDir: path.join(__dirname, "./tmp"),
+  }),
 ];
 
 // Middleware to accept body
@@ -23,7 +30,9 @@ const start = async (): Promise<void> => {
   //database connect
   await connectMongoDB();
   // route connect
-  app.use("/api", router);
+  app.use("/api", authRouter);
+  app.use("/api/user", userRouter);
+  app.use("/api/product", productRouter);
 
   // error handler
   app.use(notFound);

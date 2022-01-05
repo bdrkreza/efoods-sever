@@ -19,5 +19,5 @@ export interface IUser extends Document {
 }
 
 export interface IUserDocument extends IUser {
-  matchPassword: (password: string) => Promise<Boolean>;
+  matchesPassword: (password: string) => Promise<Boolean>;
 }

@@ -5,11 +5,13 @@ import {
   registerUser,
 } from "../controllers/auth.controller";
 import { signUpValidation, validate } from "../validation";
+import { loginValidation } from "./../validation/index";
 const router = express.Router();
 
-router.route("/login").post(authUser);
+router.route("/login").post(loginValidation(), validate, authUser);
 router
   .route("/register")
   .post(signUpValidation(), validate, registerUser)
   .get(getUser);
-export default router;
+
+export { router as authRouter };

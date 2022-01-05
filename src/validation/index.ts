@@ -2,6 +2,22 @@ import { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
 import { User } from "../models";
 
+export const loginValidation = () => {
+  return [
+    body("email")
+      .isEmail()
+      .normalizeEmail()
+      .withMessage("Email is not a valid email")
+      .trim()
+      .escape(),
+    body("password")
+      .isLength({ min: 6 })
+      .trim()
+      .escape()
+      .withMessage("Must be at least 6 chars long"),
+  ];
+};
+
 export const signUpValidation = () => {
   return [
     body("name")
@@ -39,6 +55,31 @@ export const signUpValidation = () => {
   ];
 };
 
+export const productValidation = () => {
+  return [
+    body("name")
+      .isLength({ min: 3 })
+      .withMessage("Name must be at least 3 chars long")
+      .trim()
+      .escape(),
+    body("price")
+      .isNumeric()
+      .trim()
+      .escape()
+      .withMessage("Price must be a number"),
+    body("description")
+      .isLength({ min: 6, max: 400 })
+      .trim()
+      .escape()
+      .withMessage("Name must be at least 6 chars long"),
+    body("category")
+      .isLength({ min: 3 })
+      .trim()
+      .escape()
+      .withMessage("Category is required 3 field"),
+  ];
+};
+
 export const validate = (req: Request, res: Response, next: NextFunction) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -54,6 +95,3 @@ export const validate = (req: Request, res: Response, next: NextFunction) => {
     errors: extractedErrors,
   });
 };
-function value(value: any) {
-  throw new Error("Function not implemented.");
-}
