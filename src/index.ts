@@ -4,7 +4,7 @@ import passport from "passport";
 import { PORT } from "./config/config";
 import { connectMongoDB } from "./config/database";
 import { errorHandler, notFound } from "./middleware/errorHandler";
-import { authRouter, productRouter, userRouter } from "./routes";
+import { authRouter, foodRouter, userRouter } from "./routes";
 
 const path = require("path");
 const fileUpload = require("express-fileupload");
@@ -32,7 +32,7 @@ const start = async (): Promise<void> => {
   // route connect
   app.use("/api", authRouter);
   app.use("/api/user", userRouter);
-  app.use("/api/product", productRouter);
+  app.use("/api/foodItem", foodRouter);
 
   // error handler
   app.use(notFound);

@@ -1,11 +1,11 @@
 import { model, Schema } from "mongoose";
-import { IProductDocument } from "./../services/product.service";
+import { IFoodsDocument } from "../services";
 
 const reviewSchema = new Schema({
-  user: {
+  customer: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: "User",
+    ref: "customer",
   },
   name: {
     type: String,
@@ -21,11 +21,11 @@ const reviewSchema = new Schema({
   },
 });
 
-const productSchema = new Schema({
-  user: {
+const foodsSchema = new Schema({
+  customer: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: "User",
+    ref: "customer",
   },
   name: {
     type: String,
@@ -35,7 +35,7 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
-  brand: {
+  type: {
     type: String,
     required: true,
   },
@@ -47,27 +47,17 @@ const productSchema = new Schema({
     type: String,
     required: true,
   },
+  price: {
+    type: Number,
+    required: true,
+    default: 0,
+  },
   reviews: [reviewSchema],
   rating: {
     type: Number,
     required: true,
     default: 0,
   },
-  numReviews: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
-  price: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
-  countInStock: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
 });
 
-export const foodProduct = model<IProductDocument>("foods", productSchema);
+export const foodItemsModel = model<IFoodsDocument>("foods", foodsSchema);

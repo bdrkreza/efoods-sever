@@ -3,23 +3,21 @@ import { Document } from "mongoose";
 /**
  * Represents a product
  */
-export interface IProduct {
+export interface IFoodItems {
   name: string;
   image: string;
   description: string;
-  brand: string;
+  type: string;
   category: string;
   price: number;
-  countInStock: number;
   rating: number;
-  numReviews: number;
 }
 
 /**
  * Represents a product review
  */
 export interface IReview {
-  user: string;
+  customer: string;
   name: string;
   rating: number;
   comment: string;
@@ -28,9 +26,9 @@ export interface IReview {
 /**
  * Represents a product w/ reviews
  */
-interface IProductInDatabase extends IProduct {
-  user: string;
+interface IFoodsItemInDatabase extends IFoodItems {
+  customer: string;
   reviews: IReview[];
 }
 
-export interface IProductDocument extends IProductInDatabase, Document {}
+export interface IFoodsDocument extends IFoodsItemInDatabase, Document {}

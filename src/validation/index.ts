@@ -55,7 +55,7 @@ export const signUpValidation = () => {
   ];
 };
 
-export const productValidation = () => {
+export const FoodItemsValidation = () => {
   return [
     body("name")
       .isLength({ min: 3 })
@@ -73,10 +73,10 @@ export const productValidation = () => {
       .escape()
       .withMessage("Name must be at least 6 chars long"),
     body("category")
-      .isLength({ min: 3 })
+      .isLength({ min: 1 })
       .trim()
       .escape()
-      .withMessage("Category is required 3 field"),
+      .withMessage("Category is required 1 field"),
   ];
 };
 
