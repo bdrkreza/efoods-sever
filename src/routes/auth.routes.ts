@@ -1,17 +1,19 @@
-import express from "express";
+import { Router } from "express";
+import passport from "passport";
 import {
-  authUser,
-  getUser,
-  registerUser,
-} from "../controllers/auth.controller";
-import { signUpValidation, validate } from "../validation";
-import { loginValidation } from "./../validation/index";
-const router = express.Router();
+  authLogin,
+  authSignup,
+  authUserGet,
+  updateUserProfile,
+} from "../controllers";
+import { loginValidation, validate } from "../validation";
 
-router.route("/login").post(loginValidation(), validate, authUser);
+const router = Router();
+router.route("/signup").post(authSignup);
+router.route("/login").post(loginValidation(), validate, authLogin);
 router
-  .route("/register")
-  .post(signUpValidation(), validate, registerUser)
-  .get(getUser);
+  .route("/auth-user")
+  .get(passport.authenticate("jwt", { session: false }), authUserGet)
+  .put(passport.authenticate("jwt", { session: false }), updateUserProfile);
 
 export { router as authRouter };

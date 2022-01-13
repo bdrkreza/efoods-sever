@@ -11,6 +11,7 @@ export interface IFoodItems {
   category: string;
   price: number;
   rating: number;
+  public_id: string;
 }
 
 /**

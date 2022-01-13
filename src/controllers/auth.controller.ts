@@ -1,80 +1,77 @@
-import { Request, Response } from "express";
-import { getAll, save } from "../hooks/asyncHook";
-import { User } from "../models";
-import { CUser } from "../services/auth.service";
-import generateToken from "../utils/generateToken";
+import { NextFunction, Request, Response } from "express";
+import asyncHandler from "express-async-handler";
+import Mongoose from "mongoose";
+import { AuthUser } from "../models/auth.model";
+import { createResponse, resSendData, resSendError } from "../utils";
 
-const asyncHandler = require("express-async-handler");
+const jwt = require("../lib/jwt");
 
 /**
  * authUser a private controller
  * @route POST /api/users
  * @access private
  */
-const authUser = asyncHandler(async (req: Request, res: Response) => {
-  const { email, password } = req.body as { email: string; password: string };
 
-  try {
-    const user = await User.findOne({ email });
+const authSignup = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userExists = await AuthUser.findOne({ email: req.body.email });
 
-    if (user && (await user.matchesPassword(password))) {
+      if (userExists) {
+        res.status(400);
+        throw new Error("User already exists");
+      }
+
+      const body = {
+        id: new Mongoose.Types.ObjectId(),
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        password: req.body.password,
+      };
+      const authUser = new AuthUser(body);
+      await authUser.save();
+      resSendData(res, authUser);
+    } catch (error) {
+      resSendError(res, error);
+      next(error);
+    }
+  }
+);
+
+const authLogin = asyncHandler(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const authUser = await AuthUser.findOne({ email: req.body.email });
+    if (!authUser) {
+      throw new Error("No user with this email!");
+    }
+
+    const token = jwt.issueJWT(authUser);
+
+    if (authUser && (await authUser.isValidPassword(req.body.password))) {
       res.json({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user.id),
+        data: authUser,
+        token: token,
       });
     } else {
       res.status(401);
-      throw new Error("Invalid email or password");
+      throw new Error("Incorrect email or password!");
     }
-  } catch (error: any) {
-    res.status(400).json({
-      status: false,
-      data: null,
-      message: error.message,
-      token: null,
-    });
+
+    try {
+    } catch (error) {
+      resSendError(res, error);
+      next(error);
+    }
   }
-});
+);
 
-/**
- * Register a new user
- * @route POST /api/users
- * @access Public
- */
-const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  const { id, email } = req.body as {
-    id: string;
-    email: string;
-  };
-
+const authUserGet = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const payload = req.body;
-    await save(User, payload);
-
-    res.status(200).json({
-      status: true,
-      error: false,
-      data: payload,
-      message: "Registration successful!",
-      token: generateToken(id),
-    });
-  } catch (error: any) {
-    res.status(400).json({
-      status: false,
-      data: null,
-      message: error.message,
-      token: null,
-    });
+    return res.json(createResponse(req.user));
+  } catch (err) {
+    next(err);
   }
-});
-
-const getUser = async (req: Request, res: Response) => {
-  const vm = new CUser();
-  const students = await getAll<any>(User, vm);
-  res.send(students);
 };
 
-export { registerUser, getUser, authUser };
+export { authUserGet, authSignup, authLogin };

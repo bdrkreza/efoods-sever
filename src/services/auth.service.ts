@@ -5,19 +5,19 @@ export class CUser {
   name: string = "";
   email: string = "";
   password: string = "";
-  imageURL: string = "";
+  image: string = "";
   role: string = "";
 }
 
-export interface IUser extends Document {
+export interface IAuthUser extends Document {
   id: string;
   name: string;
+  image?: string;
   email: string;
   password: string;
-  imageURL: string;
   role: string;
 }
 
-export interface IUserDocument extends IUser {
-  matchesPassword: (password: string) => Promise<Boolean>;
+export interface IAuthDocument extends IAuthUser {
+  isValidPassword: (password: string) => Promise<Boolean>;
 }

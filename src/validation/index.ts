@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { body, validationResult } from "express-validator";
-import { User } from "../models";
+import { AuthUser } from "../models";
 
 export const loginValidation = () => {
   return [
@@ -27,7 +27,7 @@ export const signUpValidation = () => {
       .escape(),
     body("email")
       .custom((value) => {
-        return User.find({
+        return AuthUser.find({
           email: value,
         }).then((user) => {
           if (user.length > 0) {

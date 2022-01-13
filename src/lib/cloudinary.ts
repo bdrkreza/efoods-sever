@@ -15,12 +15,12 @@ export const UploadFile = {
     folder: string,
     { width, height }: { width: number; height: number | string }
   ) => {
-    const res = await cloudinary.uploader.upload(image, {
+    let res = await cloudinary.uploader.upload(image, {
       folder: `efoods/${folder}`,
       transformation: { width, height, crop: "fill" },
       overwrite: true,
       invalidate: true,
     });
-    return res.secure_url;
+    return res;
   },
 };

@@ -58,6 +58,9 @@ const foodsSchema = new Schema({
     required: true,
     default: 0,
   },
+  public_id: {
+    type: String,
+  },
 });
 
 export const foodItemsModel = model<IFoodsDocument>("foods", foodsSchema);

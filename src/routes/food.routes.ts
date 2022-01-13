@@ -1,9 +1,31 @@
 import { Router } from "express";
-import { createFoods } from "../controllers";
+import passport from "passport";
+import {
+  createFoods,
+  getFoodItem,
+  getFoodItemById,
+  getTopFoodItem,
+  removeFoodItem,
+  updateFoodItem,
+} from "../controllers";
 import { FoodItemsValidation, validate } from "../validation";
 
 const router = Router();
 
-router.route("/").post(FoodItemsValidation(), validate, createFoods);
+router
+  .route("/")
+  .post(
+    passport.authenticate("jwt", { session: false }),
+    FoodItemsValidation(),
+    validate,
+    createFoods
+  );
+router.route("/").get(getFoodItem);
+router.get("/top", getTopFoodItem);
+router
+  .route("/:id")
+  .get(passport.authenticate("jwt", { session: false }), getFoodItemById)
+  .delete(removeFoodItem)
+  .put(passport.authenticate("jwt", { session: false }), updateFoodItem);
 
 export { router as foodRouter };
