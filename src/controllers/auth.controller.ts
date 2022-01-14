@@ -30,8 +30,16 @@ const authSignup = asyncHandler(
         password: req.body.password,
       };
       const authUser = new AuthUser(body);
+      const token = jwt.issueJWT(authUser);
       await authUser.save();
-      resSendData(res, authUser);
+
+      const user = {
+        name: req.body.name,
+        email: req.body.email,
+        phone: req.body.phone,
+        token: token,
+      };
+      resSendData(res, user);
     } catch (error) {
       resSendError(res, error);
       next(error);
@@ -41,27 +49,30 @@ const authSignup = asyncHandler(
 
 const authLogin = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const authUser = await AuthUser.findOne({ email: req.body.email });
-    if (!authUser) {
-      throw new Error("No user with this email!");
-    }
-
-    const token = jwt.issueJWT(authUser);
-
-    if (authUser && (await authUser.isValidPassword(req.body.password))) {
-      res.json({
-        data: authUser,
-        token: token,
-      });
-    } else {
-      res.status(401);
-      throw new Error("Incorrect email or password!");
-    }
-
+    const user = await AuthUser.findOne({ email: req.body.email });
     try {
-    } catch (error) {
-      resSendError(res, error);
-      next(error);
+      if (!user) {
+        throw new Error("No user with this email!");
+      }
+      const isValidPassword = await user.isValidPassword(req.body.password);
+      if (!isValidPassword) {
+        throw new Error("Incorrect email or password!");
+      }
+
+      const token = jwt.issueJWT(user);
+      res.json(
+        createResponse({
+          name: user.name,
+          email: user.email,
+          id: user._id,
+          phone: user.phone,
+          role: user.role,
+          status: user.status,
+          token,
+        })
+      );
+    } catch (err) {
+      next(err);
     }
   }
 );

@@ -89,7 +89,6 @@ const createFoods = asyncHandler(async (req: Request, res: Response) => {
   const { name, description, type, price, category, rating } =
     req.body as IFoodsDocument;
 
-  console.log(req.body);
   try {
     let file: any = req.files?.image;
     let path = file.tempFilePath;

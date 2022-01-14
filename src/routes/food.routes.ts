@@ -25,7 +25,7 @@ router.get("/top", getTopFoodItem);
 router
   .route("/:id")
   .get(passport.authenticate("jwt", { session: false }), getFoodItemById)
-  .delete(removeFoodItem)
+  .delete(passport.authenticate("jwt", { session: false }), removeFoodItem)
   .put(passport.authenticate("jwt", { session: false }), updateFoodItem);
 
 export { router as foodRouter };

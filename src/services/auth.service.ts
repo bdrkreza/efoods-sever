@@ -13,7 +13,9 @@ export interface IAuthUser extends Document {
   id: string;
   name: string;
   image?: string;
+  phone?: string;
   email: string;
+  status: string;
   password: string;
   role: string;
 }
